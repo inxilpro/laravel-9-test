@@ -4,6 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\Log;
 
 class Kernel extends ConsoleKernel
 {
@@ -15,7 +16,25 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+	    $schedule
+		    ->command('test:foreground')
+		    ->withoutOverlapping()
+		    ->everyMinute();
+	
+	    $schedule
+		    ->command('test:background')
+		    ->runInBackground()
+		    ->withoutOverlapping()
+		    ->everyMinute();
+	
+	    $schedule
+		    ->call(function() {
+			    sleep(10);
+			    Log::info('Closure ran.');
+		    })
+		    ->name('Scheduled closure')
+		    ->withoutOverlapping()
+		    ->everyMinute();
     }
 
     /**
